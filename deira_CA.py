@@ -24,13 +24,14 @@ def get_seqs():
         fh=open(file,"r")    
         data=fh.read()
         seqlist.append(data)
-    print (seqlist)
+    print (len(seqlist))
     
 get_seqs()    
 
 def pattern_compile():
     lst=[]
-    patterns=["AAA[ATGC]{1,7}AAA[ATGC]{1,7}AAA[ATGC]{1,7}AAA","GGG[ATGC]{1,7}GGG[ATGC]{1,7}GGG[ATGC]{1,7}GGG"]
+    patterns=["AAA[ATGC]{1,7}AAA[ATGC]{1,7}AAA[ATGC]{1,7}AAA","GGG[ATGC]{1,7}GGG[ATGC]{1,7}GGG[ATGC]{1,7}GGG"\
+              "CCC[ATGC]{1,7}CCC[ATGC]{1,7}CCC[ATGC]{1,7}CCC","TTT[ATGC]{1,7}TTT[ATGC]{1,7}TTT[ATGC]{1,7}TTT"]
     for pattern in patterns:
          regex=re.compile(pattern)
          lst.append(regex)
