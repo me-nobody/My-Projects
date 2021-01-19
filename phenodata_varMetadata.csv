@@ -1,0 +1,9 @@
+row,labelDescription
+sample,name of sample
+feature,experimental setup
+state,living or dead
+bodipy,bodipy dye used
+syto9,syto9 dye used
+pi,pi dye used
+hoechst,hoechst dye used
+cells,bacterial cells
