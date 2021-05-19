@@ -1,0 +1,93 @@
+---
+title: "Decision Tree Classifier"
+author: "Anubrata Das"
+date: "5/11/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+INTRODUCTION
+
+*"The Iris flower data set or Fisher's Iris data set is a multivariate data set introduced by the British statistician, eugenicist, and biologist Ronald Fisher in his 1936 paper The use of multiple measurements in taxonomic problems as an example of linear discriminant analysis"*
+                  -Wikipedia
+A Decision Tree is a Supervised Machine Learning algorithm which looks like an inverted tree, wherein each node represents a predictor variable (feature), the link between the nodes represents a Decision and each leaf node represents an outcome (response variable)
+
+We shall use a Decision Tree to classify the 3 species of Iris flowers in this dataset
+
+#LOAD THE LIBRARIES
+```{r echo=1:2, warning=FALSE, comment=""}
+library(caret)
+library(rpart.plot)
+```
+
+* The caret package (short for Classification And REgression Training) contains functions to streamline the model training process for complex regression and classification problems
+       -https://cran.r-project.org/web/packages/caret/vignettes/caret.html
+
+* rpart.plot is the front end of the prp package and is used to draw the Decision Tree
+
+#LOAD THE DATA
+```{r echo=1:3,warning=FALSE, comment="", prompt=TRUE}
+irisdata<-datasets::iris
+table(iris$Species)
+```
+Summary of data
+```{r comment="", prompt=TRUE}
+summary(irisdata)
+```
+Structure of data
+```{r comment="", prompt=TRUE}
+str(irisdata)
+```
+*since we are using a tree based classifier,there is no need to scale the dataset*
+
+*we will now split the dataset into train and test sets, with 70% of data in train*
+*and 30% in test*
+
+#SPLIT THE DATA INTO TEST AND TRAIN
+```{r comment="", prompt=TRUE}
+set.seed(3033)
+intrain <- createDataPartition(y = irisdata$Species, p= 0.7, list = FALSE)
+training <- irisdata[intrain,]
+testing <- irisdata[-intrain,]
+dim(training);dim(testing)
+```
+**Classification by Information Gain**
+```{r comment="", prompt=TRUE}
+trctrl <- trainControl(method = "repeatedcv", number = 10, repeats = 3)
+set.seed(3333)
+dtree_fit_info <- train(Species ~., data = training, method = "rpart",
+                   parms = list(split = "information"),
+                   trControl=trctrl,
+                   tuneLength = 10)
+prp(dtree_fit_info$finalModel, box.palette="Reds", tweak=1.2)
+```
+Let us check the outcome
+```{r comment="", prompt=TRUE}
+test_pred_info<-predict(dtree_fit_info,newdata = testing)
+confusionMatrix(test_pred_info,testing$Species)
+```
+The Information Gain model performed well with an accuracy of 0.93
+
+**Classification by Gini Coefficient**
+```{r comment="",prompt=TRUE}
+set.seed(3333)
+dtree_fit_gini <- train(Species ~., data = training, method = "rpart",
+                        parms = list(split = "gini"),
+                        trControl=trctrl,
+                        tuneLength = 10)
+prp(dtree_fit_gini$finalModel,box.palette = "Blues", tweak = 1.2)
+```
+Let us check the outcome
+```{r comment="", prompt=TRUE}
+test_pred_gini<-predict(dtree_fit_gini,newdata = testing)
+confusionMatrix(test_pred_gini,testing$Species)
+```
+The Gini coefficient model performed well with an accuracy of 0.93
+
+References:
+1)https://dataaspirant.com/decision-tree-classifier-implementation-in-r/#:~:text=The%20decision%20tree%20classifier%20is,algorithm%20in%20our%20earlier%20articles.
+                                                            -Author: Rahul Saxena
+2)https://drive.google.com/file/d/1mQguC2gku2-QFruj09a30N0TYDwCmPkq/view
+                                                            -Author: Xaltius Pte. Ltd.
